@@ -6,7 +6,6 @@ use actix_web::{
     web::{self, Data, Json},
     HttpResponse, Responder, Result,
 };
-use controllers::user_controller::postuser;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use types::UserDTO;
@@ -19,7 +18,7 @@ pub struct UserBody {
     pub state: String,
 }
 
-#[derive(Serialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct UserSQL {
     pub id: i32,
     pub uuid: String,
@@ -31,7 +30,13 @@ pub struct UserSQL {
 
 #[get("/")]
 pub async fn index(state: Data<AppState>) -> impl Responder {
-    HttpResponse::Ok()
+    match sqlx::query_as::<_, UserSQL>("SELECT * FROM users")
+        .fetch_all(&state.db)
+        .await
+    {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(error) => HttpResponse::InternalServerError().into(),
+    }
 }
 #[post("/")]
 pub async fn create_user(state: Data<AppState>, body: Json<UserBody>) -> Result<impl Responder> {
