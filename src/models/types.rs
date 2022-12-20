@@ -1,6 +1,9 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize)]
-pub struct Country {
+#[derive(Serialize, Deserialize)]
+pub struct UserDTO {
     pub name: String,
+    pub street: String,
+    pub city: String,
+    pub state: String,
 }

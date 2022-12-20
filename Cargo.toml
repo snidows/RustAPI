@@ -8,5 +8,9 @@ edition = "2021"
 [dependencies]
 actix-web = "4.2.1"
 diesel = { version = "2.0.2", default-features = false, features = ["postgres"] }
+dotenvy = "0.15.6"
 serde = { version = "1.0.151", features = ["derive"] }
 serde_json = "1.0.91"
+sqlx = {version="0.6.2",features=["postgres","runtime-tokio-rustls"]}
+tokio = {version="1.23.0", features=["full"]}
+uuid = {version="1.2.2", features=["v4"]}
