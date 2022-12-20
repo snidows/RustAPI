@@ -30,7 +30,7 @@ pub struct UserSQL {
 }
 
 #[get("/")]
-pub async fn index() -> impl Responder {
+pub async fn index(state: Data<AppState>) -> impl Responder {
     HttpResponse::Ok()
 }
 #[post("/")]
@@ -50,16 +50,7 @@ pub async fn create_user(state: Data<AppState>, body: Json<UserBody>) -> Result<
     .fetch_one(&state.db)
     .await
     {
-        Ok(user) => HttpResponse::Ok().json(user),
-        Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
-    };
-    // let uuid = Uuid::new_v4().to_string();
-    // let result = sqlx::query_as::<_, User>(
-    //     "INSERT INTO users (uuid,name,street,city,state) VALUES ($uuid,$1,$2,$3,$4) returning id",
-    // )
-    // .fetch_one(&state.db)
-    // .await;
-    // let result = postuser(&info.name, &uuid, &info.street, &info.city, &info.state).await;
-
-    Ok(HttpResponse::Ok())
+        Ok(user) => Ok(HttpResponse::Ok().json(user)),
+        Err(error) => Ok(HttpResponse::InternalServerError().json(format!("{:?}", error))),
+    }
 }
