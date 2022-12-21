@@ -8,7 +8,18 @@ use actix_web::{
 };
 use uuid::Uuid;
 
-pub async fn insert_user(
+pub async fn show_users(state: Data<AppState>) -> HttpResponse {
+    let response = match sqlx::query_as::<_, UserSQL>("SELECT * FROM users")
+        .fetch_all(&state.db)
+        .await
+    {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
+    };
+    return response;
+}
+
+pub async fn create_user(
     name: String,
     street: String,
     city: String,
@@ -37,10 +48,48 @@ pub async fn insert_user(
     return response;
 }
 
-pub async fn update_user() {}
+pub async fn update_user(
+    app: Data<AppState>,
+    uuid: String,
+    name: String,
+    street: String,
+    city: String,
+    state: String,
+) -> HttpResponse {
+    return match sqlx::query_as::<_, UserSQL>(
+        "UPDATE users SET name=$1,street = $2,city =$3,state=$4 where uuid =$5 returning  id,uuid,name,street ,city ,state",
+    )
+    .bind(name)
+    .bind(street)
+    .bind(city)
+    .bind(state)
+    .bind(uuid)
+    .fetch_one(&app.db)
+    .await
+    {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
+    };
+}
 
-pub async fn delete_user() {}
+pub async fn delete_user(app: Data<AppState>, uuid: String) -> HttpResponse {
+    return match sqlx::query_as::<_, UserSQL>("delete from users where uuid=$1")
+        .bind(uuid)
+        .fetch_one(&app.db)
+        .await
+    {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
+    };
+}
 
-pub async fn get_user() {}
-
-pub async fn index_users() {}
+pub async fn get_user(app: Data<AppState>, uuid: String) -> HttpResponse {
+    return match sqlx::query_as::<_, UserSQL>("select* from users where uuid=$1")
+        .bind(uuid)
+        .fetch_one(&app.db)
+        .await
+    {
+        Ok(user) => HttpResponse::Ok().json(user),
+        Err(error) => HttpResponse::InternalServerError().json(format!("{:?}", error)),
+    };
+}

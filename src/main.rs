@@ -26,7 +26,10 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(AppState { db: pool.clone() }))
             .wrap(actix_middleware::Logger::default())
             .service(users_api::create_user)
-            .service(users_api::index)
+            .service(users_api::show_users)
+            .service(users_api::update_user)
+            .service(users_api::delete_user)
+            .service(users_api::get_user)
         // always register default handler the last handler
         //
         // .default_service(web::to(middlewares::default::handler))
