@@ -64,7 +64,7 @@ pub async fn update_user(
 ) -> HttpResponse {
     let date = chrono::offset::Utc::now();
     return match sqlx::query_as::<_, UserSQL>(
-        "UPDATE users SET name=$1,street = $2,city =$3,state=$4,updated_at=$6 where uuid =$5 returning  id,uuid,name,street ,city ,state",
+        "UPDATE users SET name=$1,street = $2,city =$3,state=$4,updated_at=$6 where uuid =$5 and deleted_at is NULL returning  id,uuid,name,street ,city ,state",
     )
     .bind(name)
     .bind(street)
