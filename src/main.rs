@@ -25,6 +25,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(AppState { db: pool.clone() }))
             .wrap(actix_middleware::Logger::default())
+            .wrap(actix_middleware::Logger::new("%a %{User-Agent}i"))
             .service(users_api::create_user)
             .service(users_api::show_users)
             .service(users_api::update_user)

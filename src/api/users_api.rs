@@ -6,6 +6,7 @@ use actix_web::{
     web::{self, Data, Json},
     HttpResponse, Responder, Result,
 };
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use types::*;
@@ -23,6 +24,7 @@ pub async fn create_user(state: Data<AppState>, body: Json<UserBody>) -> Result<
         body.street.to_string(),
         body.city.to_string(),
         body.state.to_string(),
+        chrono::offset::Utc::now(),
         state,
         body,
     )

@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{
+    types::chrono::{DateTime, Utc},
+    FromRow,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct UserDTO {
@@ -24,4 +27,15 @@ pub struct UserSQL {
     pub street: String,
     pub city: String,
     pub state: String,
+}
+
+#[derive(Serialize, Deserialize, FromRow)]
+pub struct UserInput {
+    pub id: i32,
+    pub uuid: String,
+    pub name: String,
+    pub street: String,
+    pub city: String,
+    pub state: String,
+    // pub date: DateTime<Utc>,
 }
